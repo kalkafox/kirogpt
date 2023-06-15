@@ -1,0 +1,26 @@
+[package]
+name = "kirogpt"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "kirogpt"
+path = "src/main.rs"
+
+[dependencies]
+twilight-cache-inmemory = "*"
+twilight-gateway = "*"
+twilight-http = "*"
+twilight-model = "*"
+tokio = {version = "*", features = ["full"]}
+tracing = "*"
+dotenv = "*"
+mongodb = "*"
+serde = {version = "*", features = ["derive"]}
+serde_json = "*"
+toml = "*"
+reqwest = {version = "*", features = ["json"]}
+futures-util = "*"
+ctrlc = "*"
