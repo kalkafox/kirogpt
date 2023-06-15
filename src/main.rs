@@ -46,8 +46,6 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
         .resource_types(ResourceType::MESSAGE)
         .build();
 
-    println!("hue");
-
     let user_model = http.current_user().await?.model().await?;
 
     // Get the bot ID
@@ -280,7 +278,51 @@ async fn handle_message(
         .find(|prompt| prompt.prompt_id == "expert")
         .ok_or("No expert prompt")?;
 
+    let jb_prompt = app_data
+        .all_prompts
+        .iter()
+        .find(|prompt| prompt.prompt_id == "jb")
+        .ok_or("No jb prompt")?;
+
+    let uwu_prompt = app_data
+        .all_prompts
+        .iter()
+        .find(|prompt| prompt.prompt_id == "uwu")
+        .ok_or("No uwu prompt")?;
+
     user_message = user_message.replace("!expert", expert_prompt.prompt.as_str());
+
+    user_message = user_message.replace("!jb", jb_prompt.prompt.as_str());
+
+    if user_message.contains("!uwu") {
+        let arguments = user_message.split_whitespace().collect::<Vec<_>>();
+
+        let last_argument = arguments.last().ok_or("No last argument")?;
+
+        if last_argument.contains("\"") {
+            if last_argument.split_whitespace().count() <= 1 {
+                http.create_message(message.channel_id)
+                    .content("You need to provide a name.")?
+                    .reply(message.id)
+                    .await?;
+
+                return Ok(());
+            }
+
+            // Trim the \" if it exists
+            let last_argument = last_argument.replace("\"", "");
+
+            let name = last_argument.split_whitespace().collect::<Vec<_>>();
+
+            // Replace {FIRST_NAME} with the first name, and {LAST_NAME} with the last name
+
+            let uwu_prompt = uwu_prompt.prompt.replace("{FIRST_NAME}", name[0]);
+
+            let uwu_prompt = uwu_prompt.replace("{LAST_NAME}", name[1]);
+
+            user_message = user_message.replace("!uwu", &uwu_prompt);
+        }
+    }
 
     messages.push(kirogpt::Message {
         role: "user".to_string(),
