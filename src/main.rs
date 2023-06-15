@@ -270,7 +270,9 @@ async fn handle_message(
 
     let mut user_message = message.content.clone();
 
-    user_message = user_message.replace(&format!("<@{}>", app_data.bot_id), &app_data.username);
+    user_message = user_message.replace(&format!("<@{}>", app_data.bot_id), "");
+
+    user_message = user_message.replace(", ", "");
 
     let expert_prompt = app_data
         .all_prompts
@@ -321,6 +323,22 @@ async fn handle_message(
             let uwu_prompt = uwu_prompt.replace("{LAST_NAME}", name[1]);
 
             user_message = user_message.replace("!uwu", &uwu_prompt);
+        } else {
+            let bot_resp = http
+                .create_message(message.channel_id)
+                .content("You need to provide a name.")?
+                .reply(message.id)
+                .await?;
+
+            tokio::spawn(async move {
+                tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
+
+                http.delete_message(message.channel_id, bot_resp.model().await.unwrap().id)
+                    .await
+                    .unwrap();
+            });
+
+            return Ok(());
         }
     }
 
