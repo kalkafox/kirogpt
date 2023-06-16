@@ -302,14 +302,14 @@ async fn handle_message(
         let last_argument = arguments.last().ok_or("No last argument")?;
 
         if last_argument.contains("\"") {
-            if last_argument.split_whitespace().count() <= 1 {
-                http.create_message(message.channel_id)
-                    .content("You need to provide a name.")?
-                    .reply(message.id)
-                    .await?;
+            // if last_argument.split_whitespace().count() <= 1 {
+            //     http.create_message(message.channel_id)
+            //         .content("You need to provide a name.")?
+            //         .reply(message.id)
+            //         .await?;
 
-                return Ok(());
-            }
+            //     return Ok(());
+            // }
 
             // Trim the \" if it exists
             let last_argument = last_argument.replace("\"", "");
