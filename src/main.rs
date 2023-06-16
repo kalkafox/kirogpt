@@ -314,13 +314,18 @@ async fn handle_message(
             // Trim the \" if it exists
             let last_argument = last_argument.replace("\"", "");
 
-            let name = last_argument.split_whitespace().collect::<Vec<_>>();
+            let name = last_argument
+                .split_whitespace()
+                .collect::<Vec<_>>()
+                .join(" ");
 
             // Replace {FIRST_NAME} with the first name, and {LAST_NAME} with the last name
 
-            let uwu_prompt = uwu_prompt.prompt.replace("{FIRST_NAME}", name[0]);
+            let uwu_prompt = uwu_prompt.prompt.replace("{FIRST_NAME}", "{NAME}");
 
-            let uwu_prompt = uwu_prompt.replace("{LAST_NAME}", name[1]);
+            let uwu_prompt = uwu_prompt.replace("{LAST_NAME}", "{NAME}");
+
+            let uwu_prompt = uwu_prompt.replace("{NAME}", &name);
 
             user_message = user_message.replace("!uwu", &uwu_prompt);
         } else {
