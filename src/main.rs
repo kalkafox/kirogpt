@@ -323,6 +323,8 @@ async fn handle_message(
 
             let uwu_prompt = uwu_prompt.prompt.replace("{FIRST_NAME}", "{NAME}");
 
+            let uwu_prompt = uwu_prompt.replace("{FULL_NAME}", "{NAME}");
+
             let uwu_prompt = uwu_prompt.replace("{LAST_NAME}", "{NAME}");
 
             let uwu_prompt = uwu_prompt.replace("{NAME}", &name);
