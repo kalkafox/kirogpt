@@ -11,7 +11,7 @@ use tokio::{main, sync::Mutex};
 use twilight_cache_inmemory::{InMemoryCache, ResourceType};
 use twilight_gateway::{Event, Intents, Shard, ShardId};
 use twilight_http::Client as DiscordClient;
-use twilight_model::gateway::payload::incoming::MessageCreate;
+use twilight_model::{gateway::payload::incoming::MessageCreate, http::attachment::Attachment};
 
 #[main]
 async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
@@ -404,13 +404,37 @@ async fn handle_message(
 
     println!("Response: {}", response);
 
-    let bot_msg = http
-        .create_message(message.channel_id)
-        .content(&response)?
-        .reply(message.id)
-        .await?;
+    // this is a really stupid way of doing it, but idc
+    let mut bot_msg_id = "0".to_string();
 
-    let bot_msg_id = u64::from(bot_msg.model().await?.id);
+    if response.len() >= 2000 {
+        // Send the message as a Discord attachment
+
+        let bot_msg = http
+            .create_message(message.channel_id)
+            .attachments(&[twilight_model::http::attachment::Attachment::from_bytes(
+                "response.txt".to_owned(),
+                response.clone().into_bytes(),
+                1,
+            )])?
+            .reply(message.id)
+            .await?;
+
+        bot_msg_id = bot_msg.model().await?.id.to_string();
+    } else {
+        let bot_msg = http
+            .create_message(message.channel_id)
+            .content(&response)?
+            .reply(message.id)
+            .await?;
+
+        bot_msg_id = bot_msg.model().await?.id.to_string();
+    }
+
+    if bot_msg_id == "0" {
+        eprintln!("I don't know how this happened, but it wasn't supposed to.");
+        return Ok(());
+    }
 
     messages.push(kirogpt::Message {
         role: "assistant".to_string(),
