@@ -272,7 +272,10 @@ async fn handle_message(
 
     user_message = user_message.replace(&format!("<@{}>", app_data.bot_id), "");
 
-    user_message = user_message.replace(", ", "");
+    user_message = user_message.replace("As an AI language model, ", "");
+    user_message = user_message.replace("as an AI language model, ", "");
+    user_message = user_message.replace("As an AI language model", "");
+    user_message = user_message.replace("as an AI language model", "");
 
     let expert_prompt = app_data
         .all_prompts
