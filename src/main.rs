@@ -382,7 +382,7 @@ async fn handle_message(
         .post("https://api.openai.com/v1/chat/completions")
         .headers(headers)
         .json(&kirogpt::ChatCompletionRequest {
-            model: "gpt-4".to_string(),
+            model: "gpt-3.5".to_string(),
             messages: messages.clone(),
         })
         .send()
